@@ -22,7 +22,9 @@ export default function DashboardLayout({
           </Suspense>
         </div>
       </nav>
-      {children}
+      <div id="main-content" tabIndex={-1} className="flex-1">
+        {children}
+      </div>
     </main>
   );
 }

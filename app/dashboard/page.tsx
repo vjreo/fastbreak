@@ -37,7 +37,7 @@ async function DashboardContent({ searchParams }: { searchParams: Promise<{ sear
           </div>
           <Button asChild>
             <Link href="/dashboard/events/new">
-              <Plus className="size-4 mr-2" />
+              <Plus className="size-4 mr-2" aria-hidden />
               New event
             </Link>
           </Button>

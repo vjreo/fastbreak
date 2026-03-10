@@ -84,12 +84,27 @@ export function EventForm({ sportTypes, venueCatalog, event }: EventFormProps) {
       sport_type_id: event?.sport_type_id ?? "",
       date_time: event ? toLocalDateTime(event.date_time) : "",
       description: event?.description ?? "",
-      venues:
-        event?.venues?.sort((a, b) => a.sort_order - b.sort_order).map((v) => ({
-          venue_catalog_id: v.venue_catalog_id ?? CREATE_NEW_VENUE,
-          name: v.name,
-          address: v.address ?? "",
-        })) ?? [{ venue_catalog_id: SELECT_VENUE_PLACEHOLDER, name: "", address: "" }],
+      venues: (() => {
+        const venues = event?.venues?.sort((a, b) => a.sort_order - b.sort_order) ?? [];
+        const seen = new Set<string>();
+        const deduped = venues.filter((v) => {
+          const catalogId = v.venue_catalog_id ?? CREATE_NEW_VENUE;
+          const key =
+            catalogId !== CREATE_NEW_VENUE && catalogId !== SELECT_VENUE_PLACEHOLDER
+              ? `catalog:${catalogId}`
+              : `custom:${v.name}|${v.address ?? ""}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        return deduped.length > 0
+          ? deduped.map((v) => ({
+              venue_catalog_id: v.venue_catalog_id ?? CREATE_NEW_VENUE,
+              name: v.name,
+              address: v.address ?? "",
+            }))
+          : [{ venue_catalog_id: SELECT_VENUE_PLACEHOLDER, name: "", address: "" }];
+      })(),
     },
   });
 
@@ -222,8 +237,9 @@ export function EventForm({ sportTypes, venueCatalog, event }: EventFormProps) {
               size="sm"
               onClick={() => append({ venue_catalog_id: SELECT_VENUE_PLACEHOLDER, name: "", address: "" })}
               className="border-primary/40 text-primary hover:bg-primary/10"
+              aria-label="Add venue"
             >
-              <Plus className="size-4 mr-1" />
+              <Plus className="size-4 mr-1" aria-hidden />
               Add venue
             </Button>
           </div>
@@ -285,8 +301,9 @@ export function EventForm({ sportTypes, venueCatalog, event }: EventFormProps) {
                         size="icon"
                         onClick={() => remove(index)}
                         disabled={fields.length <= 1}
+                        aria-label={`Remove venue ${index + 1}`}
                       >
-                        <Trash2 className="size-4 text-destructive" />
+                        <Trash2 className="size-4 text-destructive" aria-hidden />
                       </Button>
                     )}
                   </div>
@@ -306,10 +323,19 @@ export function EventForm({ sportTypes, venueCatalog, event }: EventFormProps) {
                           </FormItem>
                         )}
                       />
-                      <Input
-                        placeholder="Address (optional)"
-                        {...form.register(`venues.${index}.address`)}
-                      />
+                      <div className="space-y-2">
+                        <label
+                          htmlFor={`venue-address-${index}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Address (optional)
+                        </label>
+                        <Input
+                          id={`venue-address-${index}`}
+                          placeholder="e.g. 123 Main St"
+                          {...form.register(`venues.${index}.address`)}
+                        />
+                      </div>
                     </div>
                     <Button
                       type="button"
@@ -317,8 +343,9 @@ export function EventForm({ sportTypes, venueCatalog, event }: EventFormProps) {
                       size="icon"
                       onClick={() => remove(index)}
                       disabled={fields.length <= 1}
+                      aria-label={`Remove venue ${index + 1}`}
                     >
-                      <Trash2 className="size-4 text-destructive" />
+                      <Trash2 className="size-4 text-destructive" aria-hidden />
                     </Button>
                   </div>
                 )}

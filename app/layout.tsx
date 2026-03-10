@@ -35,6 +35,12 @@ export default function RootLayout({
           forcedTheme="dark"
           disableTransitionOnChange
         >
+          <a
+            href="#main-content"
+            className="sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:block focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:m-0 focus:p-4 focus:min-h-auto focus:w-auto focus:overflow-visible focus:clip-auto"
+          >
+            Skip to main content
+          </a>
           {children}
           <Toaster
             richColors
