@@ -11,6 +11,13 @@ export default {
   theme: {
     extend: {
       colors: {
+        /* Fastbreak brand*/
+        fastbreak: {
+          black: "#011627",
+          aqua: "#17F2E3",
+          sky: "#49CBE8",
+          white: "#FFFFFF",
+        },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

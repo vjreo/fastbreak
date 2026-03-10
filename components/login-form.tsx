@@ -160,7 +160,7 @@ export function LoginForm({
             Don&apos;t have an account?{" "}
             <Link
               href="/auth/sign-up"
-              className="underline underline-offset-4"
+              className="text-primary underline underline-offset-4 hover:text-primary/90"
             >
               Sign up
             </Link>

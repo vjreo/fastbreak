@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -9,8 +10,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Fastbreak - Sports Event Management",
-  description: "Manage sports, events and venues for your organization",
+  title: "Fastbreak AI - Sports Event Management",
+  description: "Accelerate your game. Manage sports events, leagues, and venues with Fastbreak AI.",
 };
 
 const geistSans = Geist({
@@ -29,11 +30,23 @@ export default function RootLayout({
       <body className={`${geistSans.className} antialiased`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
+          enableSystem={false}
+          forcedTheme="dark"
           disableTransitionOnChange
         >
           {children}
+          <Toaster
+            richColors
+            position="top-center"
+            theme="dark"
+            toastOptions={{
+              classNames: {
+                success: "border-primary/30",
+                error: "border-destructive/30",
+              },
+            }}
+          />
         </ThemeProvider>
       </body>
     </html>
