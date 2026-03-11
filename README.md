@@ -1,6 +1,8 @@
 # Fastbreak AI Event Dashboard - Demo Application Branded as Forecheck AI
 
-A sports event management dashboard for organizing, scheduling, and tracking events across multiple venues and sport types.
+Utilized the name 'Forecheck' because it signifies putting pressure on a defending team in Hockey, giving the opportunity to gain possession in the offensive zone. 
+
+This is a sports event management dashboard for organizing, scheduling, and tracking events across multiple venues and sport types.
 
 ---
 
