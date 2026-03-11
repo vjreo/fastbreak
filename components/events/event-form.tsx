@@ -134,7 +134,7 @@ export function EventForm({ sportTypes, venueCatalog, event }: EventFormProps) {
     const formData = new FormData();
     formData.set("name", values.name);
     formData.set("sport_type_id", values.sport_type_id);
-    formData.set("date_time", values.date_time);
+    formData.set("date_time", new Date(values.date_time).toISOString());
     if (values.duration_minutes != null) {
       formData.set("duration_minutes", String(values.duration_minutes));
     }
