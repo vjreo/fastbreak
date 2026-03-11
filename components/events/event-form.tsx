@@ -128,7 +128,7 @@ export function EventForm({ sportTypes, venueCatalog, event }: EventFormProps) {
         venues: [{ venue_catalog_id: SELECT_VENUE_PLACEHOLDER, name: "", address: "" }],
       });
     }
-  }, [event]);
+  }, [event, form]);
 
   const onSubmit = async (values: EventFormValues) => {
     const formData = new FormData();

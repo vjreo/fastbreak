@@ -45,14 +45,6 @@ function formatEventDate(iso: string) {
   });
 }
 
-function formatEventTime(iso: string) {
-  const d = new Date(iso);
-  return d.toLocaleTimeString(undefined, {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
 function formatEventTimeRange(iso: string, durationMinutes?: number | null): string {
   const start = new Date(iso);
   const duration = durationMinutes ?? 60;

@@ -70,11 +70,10 @@ The `EventCalendar` timeline view computes scheduling conflicts without an extra
 
 The event data is already fetched for the current view — the overlap check adds zero latency and zero load to the database. The tradeoff is that conflicts are only shown for events currently visible in the filter, which is acceptable since this is a convenience warning, not a hard constraint.
 
-### Three event views
+### Two event views
 
-The dashboard offers three ways to look at the same event data — built around the questions a sports event organizer may ask (in trying to think from that perspective):
+The dashboard offers two ways to look at the same event data — built around the questions a sports event organizer may ask:
 
-- **Card grid** (`EventList`) — responsive grid of shadcn Card components, best for scanning details - pop out window for larger context view.
 - **Day timeline** (`EventCalendar`) — groups events by date, shows duration, surfaces venue conflicts. Conflicts are easy to miss in a flat sorted list.
 - **Month grid** (`EventCalendarGrid`) — full calendar with per-day event count badges; clicking a day applies a date filter. A list doesn't answer "how many events do I have this week", holistically — the month grid gives an immediate visual answer and lets you drill down.
 
@@ -144,7 +143,7 @@ All tables carry `deleted_at timestamptz` for soft deletion. RLS policies on all
 
    ```
    NEXT_PUBLIC_SUPABASE_URL=https://<your-project>.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<your-publishable-key>
    ```
 
 4. **Run database migrations**
