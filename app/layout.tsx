@@ -10,8 +10,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Fastbreak AI - Sports Event Management",
-  description: "Accelerate your game. Manage sports events, leagues, and venues with Fastbreak AI.",
+  title: "Forecheck AI - Sports Event Management",
+  description: "Accelerate your game. Manage sports events, leagues, and venues with Forecheck AI.",
 };
 
 const geistSans = Geist({

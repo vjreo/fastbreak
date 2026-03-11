@@ -11,7 +11,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        /* Fastbreak brand*/
+        /* Forecheck brand*/
         fastbreak: {
           black: "#011627",
           aqua: "#17F2E3",

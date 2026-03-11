@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-import { useFieldArray } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -30,8 +29,7 @@ import {
   createEvent,
   updateEvent,
 } from "@/app/dashboard/events/actions";
-import type { SportType, VenueCatalog } from "@/types/database";
-import type { Event } from "@/types/database";
+import type { Event, SportType, VenueCatalog } from "@/types/database";
 
 const CREATE_NEW_VENUE = "__create_new__";
 const SELECT_VENUE_PLACEHOLDER = "";
@@ -40,6 +38,11 @@ const eventSchema = z.object({
   name: z.string().min(1, "Event name is required"),
   sport_type_id: z.string().min(1, "Please select a sport"),
   date_time: z.string().min(1, "Date and time are required"),
+  duration_minutes: z
+    .number()
+    .int()
+    .min(1, "Duration must be at least 1 minute")
+    .optional(),
   description: z.string().optional(),
   venues: z.array(
     z.object({
@@ -83,6 +86,7 @@ export function EventForm({ sportTypes, venueCatalog, event }: EventFormProps) {
       name: event?.name ?? "",
       sport_type_id: event?.sport_type_id ?? "",
       date_time: event ? toLocalDateTime(event.date_time) : "",
+      duration_minutes: event?.duration_minutes ?? undefined,
       description: event?.description ?? "",
       venues: (() => {
         const venues = event?.venues?.sort((a, b) => a.sort_order - b.sort_order) ?? [];
@@ -119,6 +123,7 @@ export function EventForm({ sportTypes, venueCatalog, event }: EventFormProps) {
         name: "",
         sport_type_id: "",
         date_time: "",
+        duration_minutes: undefined,
         description: "",
         venues: [{ venue_catalog_id: SELECT_VENUE_PLACEHOLDER, name: "", address: "" }],
       });
@@ -130,6 +135,9 @@ export function EventForm({ sportTypes, venueCatalog, event }: EventFormProps) {
     formData.set("name", values.name);
     formData.set("sport_type_id", values.sport_type_id);
     formData.set("date_time", values.date_time);
+    if (values.duration_minutes != null) {
+      formData.set("duration_minutes", String(values.duration_minutes));
+    }
     formData.set("description", values.description ?? "");
     values.venues.forEach((v) => {
       const isNewVenue = v.venue_catalog_id === CREATE_NEW_VENUE || v.venue_catalog_id === SELECT_VENUE_PLACEHOLDER;
@@ -204,6 +212,35 @@ export function EventForm({ sportTypes, venueCatalog, event }: EventFormProps) {
               <FormLabel>Date & time</FormLabel>
               <FormControl>
                 <Input type="datetime-local" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="duration_minutes"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Duration (minutes, optional)</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  min={1}
+                  placeholder="e.g. 90"
+                  value={field.value ?? ""}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value === ""
+                        ? undefined
+                        : parseInt(e.target.value, 10)
+                    )
+                  }
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

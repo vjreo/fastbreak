@@ -57,6 +57,15 @@ function formatEventTime(iso: string) {
   });
 }
 
+function formatEventTimeRange(iso: string, durationMinutes?: number | null): string {
+  const start = new Date(iso);
+  const duration = durationMinutes ?? 60;
+  const end = new Date(start.getTime() + duration * 60 * 1000);
+  const startStr = start.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  const endStr = end.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  return `${startStr} – ${endStr}`;
+}
+
 export function EventList({ events }: EventListProps) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -82,7 +91,7 @@ export function EventList({ events }: EventListProps) {
           No events found. Create your first event to get started.
         </p>
         <p className="text-sm text-muted-foreground/80">
-          Accelerate your game with Fastbreak AI.
+          Accelerate your game with Forecheck AI.
         </p>
       </div>
     );
@@ -121,14 +130,14 @@ export function EventList({ events }: EventListProps) {
               }}
               role="button"
               tabIndex={0}
-              aria-label={`${event.name}, ${formatEventDate(event.date_time)}. Click to view details`}
+              aria-label={`${event.name}, ${formatEventDate(event.date_time)} ${formatEventTimeRange(event.date_time, event.duration_minutes)}. Click to view details`}
             >
               <CardHeader className="flex flex-row items-start justify-between gap-2 select-none hover:bg-muted/30 transition-colors rounded-t-lg -mb-1">
                 <div className="space-y-1.5 min-w-0 flex-1">
                   <CardTitle className="text-lg truncate">{event.name}</CardTitle>
                   <CardDescription className="flex flex-col">
                     <span>{formatEventDate(event.date_time)}</span>
-                    <span>{formatEventTime(event.date_time)}</span>
+                    <span>{formatEventTimeRange(event.date_time, event.duration_minutes)}</span>
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
@@ -219,7 +228,7 @@ export function EventList({ events }: EventListProps) {
                   <DialogDescription asChild>
                     <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                       <span>
-                        {formatEventDate(event.date_time)} at {formatEventTime(event.date_time)}
+                        {formatEventDate(event.date_time)} at {formatEventTimeRange(event.date_time, event.duration_minutes)}
                       </span>
                       <Badge
                         variant="secondary"

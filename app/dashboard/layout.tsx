@@ -13,9 +13,9 @@ export default function DashboardLayout({
         <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
           <Link
             href="/dashboard"
-            className="font-bold text-lg tracking-tight text-foreground hover:text-primary transition-colors"
+            className="font-bold text-lg tracking-tight text-foreground"
           >
-            Fastbreak <span className="text-primary font-semibold">AI®</span>
+            Forecheck <span className="text-primary font-semibold">AI</span>
           </Link>
           <Suspense fallback={<div className="h-9 w-24" />}>
             <AuthButton />

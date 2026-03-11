@@ -9,9 +9,6 @@ import {
 import type { Event, SportType, VenueCatalog } from "@/types/database";
 import { revalidatePath } from "next/cache";
 
-/**
- * Fetch all venue catalog entries for dropdowns.
- */
 export async function getVenueCatalog(): Promise<VenueCatalog[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -26,9 +23,6 @@ export async function getVenueCatalog(): Promise<VenueCatalog[]> {
   return (data ?? []) as VenueCatalog[];
 }
 
-/**
- * Fetch all sport types for dropdowns.
- */
 export async function getSportTypes(): Promise<SportType[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -43,11 +37,15 @@ export async function getSportTypes(): Promise<SportType[]> {
   return (data ?? []) as SportType[];
 }
 
-/**
- * Fetch a single event by ID (for edit form).
- */
 export async function getEvent(eventId: string): Promise<Event | null> {
   const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) return null;
+
   const { data, error } = await supabase
     .from("events")
     .select(
@@ -56,6 +54,7 @@ export async function getEvent(eventId: string): Promise<Event | null> {
       name,
       sport_type_id,
       date_time,
+      duration_minutes,
       description,
       created_by,
       created_at,
@@ -65,21 +64,25 @@ export async function getEvent(eventId: string): Promise<Event | null> {
     `
     )
     .eq("id", eventId)
+    .eq("created_by", user.id)
     .single();
 
   if (error || !data) return null;
   return data as unknown as Event;
 }
 
-/**
- * Fetch events with optional search and sport filter.
- * Used by the dashboard page.
- */
 export async function getEvents(
   search?: string,
-  sport?: string
+  sport?: string,
+  date?: string
 ): Promise<Event[]> {
   const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) return [];
 
   let query = supabase
     .from("events")
@@ -89,6 +92,7 @@ export async function getEvents(
       name,
       sport_type_id,
       date_time,
+      duration_minutes,
       description,
       created_by,
       created_at,
@@ -97,13 +101,27 @@ export async function getEvents(
       venues (id, name, address, sort_order, venue_catalog_id)
     `
     )
+    .eq("created_by", user.id)
     .order("date_time", { ascending: true });
 
   if (search?.trim()) {
     query = query.ilike("name", `%${search.trim()}%`);
   }
   if (sport?.trim()) {
-    query = query.eq("sport_type_id", sport.trim());
+    const sportIds = sport.split(",").map((s) => s.trim()).filter(Boolean);
+    query = sportIds.length === 1
+      ? query.eq("sport_type_id", sportIds[0])
+      : query.in("sport_type_id", sportIds);
+  }
+
+  if (date?.trim()) {
+    const start = new Date(date);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(date);
+    end.setHours(23, 59, 59, 999);
+    query = query
+      .gte("date_time", start.toISOString())
+      .lte("date_time", end.toISOString());
   }
 
   const { data, error } = await query;
@@ -116,9 +134,6 @@ export async function getEvents(
   return (data ?? []) as unknown as Event[];
 }
 
-/**
- * Create a new event with venues.
- */
 export async function createEvent(
   formData: FormData
 ): Promise<ActionResult<{ id: string }>> {
@@ -136,6 +151,8 @@ export async function createEvent(
   const sport_type_id = formData.get("sport_type_id") as string;
   const date_time = formData.get("date_time") as string;
   const description = (formData.get("description") as string) || null;
+  const durationRaw = formData.get("duration_minutes") as string | null;
+  const duration_minutes = durationRaw ? parseInt(durationRaw, 10) || null : null;
 
   if (!name?.trim()) return createError("Event name is required.");
   if (!sport_type_id) return createError("Please select a sport.");
@@ -147,6 +164,7 @@ export async function createEvent(
       name: name.trim(),
       sport_type_id,
       date_time: new Date(date_time).toISOString(),
+      duration_minutes,
       description: description?.trim() || null,
       created_by: user.id,
     })
@@ -223,9 +241,6 @@ export async function createEvent(
   return createSuccess({ id: event.id });
 }
 
-/**
- * Update an existing event and its venues.
- */
 export async function updateEvent(
   eventId: string,
   formData: FormData
@@ -244,6 +259,8 @@ export async function updateEvent(
   const sport_type_id = formData.get("sport_type_id") as string;
   const date_time = formData.get("date_time") as string;
   const description = (formData.get("description") as string) || null;
+  const durationRaw = formData.get("duration_minutes") as string | null;
+  const duration_minutes = durationRaw ? parseInt(durationRaw, 10) || null : null;
 
   if (!name?.trim()) return createError("Event name is required.");
   if (!sport_type_id) return createError("Please select a sport.");
@@ -255,6 +272,7 @@ export async function updateEvent(
       name: name.trim(),
       sport_type_id,
       date_time: new Date(date_time).toISOString(),
+      duration_minutes,
       description: description?.trim() || null,
     })
     .eq("id", eventId)
@@ -334,9 +352,6 @@ export async function updateEvent(
   return createSuccess(undefined);
 }
 
-/**
- * Soft delete an event (sets deleted_at; venues remain for history).
- */
 export async function deleteEvent(eventId: string): Promise<ActionResult<void>> {
   const supabase = await createClient();
   const {

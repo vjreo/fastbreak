@@ -1,5 +1,5 @@
 /**
- * Types for Fastbreak database entities.
+ * Types for Forecheck database entities.
  */
 export interface SportType {
   id: string;
@@ -12,6 +12,7 @@ export interface Event {
   name: string;
   sport_type_id: string;
   date_time: string;
+  duration_minutes?: number | null;
   description: string | null;
   created_by: string | null;
   created_at: string;

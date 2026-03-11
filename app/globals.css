@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Fastbreak AI brand colors - https://www.fastbreak.ai/company/brand */
+/* Forecheck AI brand colors */
 /* Galaxy Black #011627 | Bright Aqua #17F2E3 | Electric Sky #49CBE8 | White #FFFFFF */
 
 @layer base {
@@ -34,7 +34,7 @@
     --radius: 0.5rem;
   }
   .dark {
-    /* Fastbreak brand - Galaxy Black base, Bright Aqua primary, Electric Sky accent */
+    /* Forecheck brand - Galaxy Black base, Bright Aqua primary, Electric Sky accent */
     --background: 211 95% 8%;
     --foreground: 0 0% 100%;
     --card: 211 95% 11%;
@@ -46,7 +46,8 @@
     --secondary: 211 95% 16%;
     --secondary-foreground: 0 0% 100%;
     --muted: 211 95% 14%;
-    --muted-foreground: 194 74% 70%;
+    /* WCAG AA: 78% lightness on 8% background for readable subtext */
+    --muted-foreground: 194 74% 78%;
     --accent: 211 95% 16%;
     --accent-foreground: 174 89% 52%;
     --destructive: 0 62.8% 50%;
