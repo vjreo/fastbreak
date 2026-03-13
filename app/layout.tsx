@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -53,6 +54,7 @@ export default function RootLayout({
               },
             }}
           />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>
